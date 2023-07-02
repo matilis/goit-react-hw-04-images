@@ -1,0 +1,12 @@
+.gallery__photos {
+  width: 200px;
+  border: 2px double rgb(114, 114, 233);
+  background-color: white;
+  padding: 7px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.gallery__card {
+  width: 100%;
+}
