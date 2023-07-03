@@ -19,11 +19,13 @@
   box-shadow: 0px 35px 10px -25px rgba(0, 0, 0, 0.5);
   transform: scale(1);
   animation: pulse 3.5s infinite;
+  cursor: pointer;
 }
 .btnLoadMore__item:hover,
 .btnLoadMore__item:focus {
-  box-shadow: 0px 35px 10px -25px rgba(0, 0, 0, 0.5);
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
   outline: none;
+  animation: none;
 }
 @keyframes pulse {
   0% {

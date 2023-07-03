@@ -1,30 +1,23 @@
-import { Component } from 'react';
+import React, { useEffect } from 'react';
 import css from './Modal.module.css';
 
-export class Modal extends Component {
-  modalClose = event => {
+export const Modal = ({ imageAddress, onClick }) => {
+  const modalClose = event => {
     if (event.key === 'Escape' || event.type === 'click') {
-      this.props.onClick('');
+      onClick('');
     }
   };
 
-  componentDidMount() {
-    document.addEventListener('keydown', this.modalClose, false);
-  }
+  useEffect(() => {
+    document.addEventListener('keydown', modalClose, false);
+    return () => document.addEventListener('keydown', modalClose, false);
+  });
 
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.modalClose, false);
-  }
-
-  render() {
-    const { imageAddress } = this.props;
-
-    return (
-      <div className={css.modal} onClick={this.modalClose}>
-        <div>
-          <img className={css.modal__photo} src={imageAddress} alt="modal" />
-        </div>
+  return (
+    <div className={css.modal} onClick={modalClose}>
+      <div>
+        <img className={css.modal__photo} src={imageAddress} alt="modal" />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};

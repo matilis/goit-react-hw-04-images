@@ -5,8 +5,28 @@
   padding: 7px;
   border-radius: 3px;
   cursor: pointer;
+  animation: 1200ms cubic-bezier(0.25, 0.25, 0.25, 1.15) both fade-in;
 }
 
 .gallery__card {
   width: 100%;
+}
+@for $i from 1 through 12 {
+  .gallery__photos {
+    &:nth-child(#{$i}) {
+      animation-delay: $i * (550ms);
+    }
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: rotateY(180deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotateY(0);
+  }
 }

@@ -1,43 +1,41 @@
-import { Component } from 'react';
+import React, { useState } from 'react';
 import css from './Searchbar.module.css';
 
-export class Searchbar extends Component {
-  state = {
-    name: '',
-  };
+const INITIAL_STATE = {
+  name: '',
+};
 
-  handleSubmit = event => {
+export const Searchbar = ({ name, onSubmit }) => {
+  const [searchData, setSearchData] = useState(INITIAL_STATE);
+
+  const handleSubmit = event => {
     event.preventDefault();
-    const { name } = this.state;
-    this.props.onSubmit(name);
-    this.setState({ name: '' });
+    const { name } = searchData;
+    onSubmit(name);
+    setSearchData({ name: '' });
   };
 
-  handleChange = event => {
+  const handleChange = event => {
     const { value } = event.currentTarget;
-    this.setState({ name: value });
+    setSearchData({ name: value });
   };
 
-  render() {
-    const { name } = this.state;
-
-    return (
-      <header className={css.searchbar}>
-        <form className={css.searchbar__form} onSubmit={this.handleSubmit}>
-          <input
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            onChange={this.handleChange}
-            value={name}
-            className={css.searchbar__input}
-          />
-          <button className={css.searchbar__btn} type="submit">
-            <span className={css.searchbar__btnText}>Search</span>
-          </button>
-        </form>
-      </header>
-    );
-  }
-}
+  return (
+    <header className={css.searchbar}>
+      <form className={css.searchbar__form} onSubmit={handleSubmit}>
+        <input
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          onChange={handleChange}
+          value={name}
+          className={css.searchbar__input}
+        />
+        <button className={css.searchbar__btn} type="submit">
+          <span className={css.searchbar__btnText}>Search</span>
+        </button>
+      </form>
+    </header>
+  );
+};

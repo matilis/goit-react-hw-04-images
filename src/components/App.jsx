@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Searchbar } from './Searchbar';
 import { fetchPhotosWithQuery } from './services';
 import { ImageGallery } from './ImageGallery';
@@ -6,94 +6,80 @@ import { Loader } from './Loader';
 import { Button } from './Button';
 import { Modal } from './Modal';
 
-export class App extends Component {
-  state = {
-    photos: [],
-    searchValue: '',
-    page: 1,
-    error: null,
-    isLoading: false,
-    modal: '',
+export const App = () => {
+  const [photos, setPhotos] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modal, setModal] = useState('');
+
+  const searchValueHandler = event => {
+    setSearchValue(event);
+    setPage(1);
+    setPhotos([]);
   };
 
-  async componentDidUpdate(prevProps, prevState) {
-    if (
-      this.state.searchValue !== prevState.searchValue ||
-      this.state.page !== prevState.page
-    ) {
-      try {
-        this.setState({ isLoading: true });
-
-        const photos = await fetchPhotosWithQuery(
-          this.state.searchValue,
-          this.state.page
-        );
-
-        photos.map(photo => {
-          return this.setState(prevState => ({
-            photos: [
-              ...prevState.photos,
-              {
-                id: photo.id,
-                webformatURL: photo.webformatURL,
-                largeImageURL: photo.largeImageURL,
-                tags: photo.tags,
-              },
-            ],
-          }));
-        });
-      } catch (error) {
-        this.setState({ error });
-      } finally {
-        this.setState({ isLoading: false });
-      }
-    }
-  }
-
-  searchValue = e =>
-    this.setState({
-      searchValue: e,
-      page: 1,
-      photos: [],
-      error: null,
-    });
-
-  showPhotos = () => {
-    const { photos } = this.state;
-    return photos;
+  const loadBtnVisibility = () => {
+    if (photos.length < 12) return 'none';
   };
 
-  loadBtnVisibility = () => {
-    if (this.state.photos.length < 12) return 'none';
-  };
-
-  loadBtnMore = event => {
+  const loadBtnMore = event => {
     if (event) {
-      this.setState({ page: this.state.page + 1 });
+      setPage(prevPage => prevPage + 1);
     }
   };
 
-  handleModal = imageAddress => this.setState({ modal: imageAddress });
+  const handleModal = imageAddress => {
+    setModal(imageAddress);
+  };
 
-  modalClose = event => this.setState({ modal: event });
+  const modalClose = event => {
+    setModal(event);
+  };
 
-  showModal = () => this.state.modal;
+  const showModal = () => {
+    return modal;
+  };
 
-  render() {
-    const { photos, isLoading, modal } = this.state;
+  useEffect(() => {
+    const fetchData = async () => {
+      if (searchValue !== '' || page !== 1) {
+        try {
+          setIsLoading(true);
 
-    return (
-      <div>
-        <Searchbar onSubmit={this.searchValue} />
-        <ImageGallery photos={photos} imageAddress={this.handleModal} />
-        {isLoading && <Loader />}
-        <div style={{ display: this.loadBtnVisibility() }}>
-          {!isLoading && <Button onClick={this.loadBtnMore} />}
-        </div>
-        {modal !== '' && (
-          <Modal imageAddress={this.showModal()} onClick={this.modalClose} />
-        )}
+          const fetchedPhotos = await fetchPhotosWithQuery(searchValue, page);
+
+          setPhotos(prevPhotos => [
+            ...prevPhotos,
+            ...fetchedPhotos.map(photo => ({
+              id: photo.id,
+              webformatURL: photo.webformatURL,
+              largeImageURL: photo.largeImageURL,
+              tags: photo.tags,
+            })),
+          ]);
+        } catch (error) {
+          alert(error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+  }, [searchValue, page]);
+
+  return (
+    <div>
+      <Searchbar onSubmit={searchValueHandler} />
+      <ImageGallery photos={photos} imageAddress={handleModal} />
+      {isLoading && <Loader />}
+      <div style={{ display: loadBtnVisibility() }}>
+        {!isLoading && <Button onClick={loadBtnMore} />}
       </div>
-    );
-  }
-}
+      {modal !== '' && (
+        <Modal imageAddress={showModal()} onClick={modalClose} />
+      )}
+    </div>
+  );
+};
